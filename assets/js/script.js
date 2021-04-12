@@ -21,15 +21,15 @@ $("#currentDay").text(currentDay)
 var eventContEl = $("#event-container")
 var eventTemplate = ``
 var _event = [
-    {hour: 9, militaryTime: 9},
-    {hour: 10, militaryTime: 10},
-    {hour: 11, militaryTime: 11},
-    {hour: 12, militaryTime: 12},
-    {hour: 1,  militaryTime: 13},
-    {hour: 2, militaryTime: 14},
-    {hour: 3, militaryTime: 15},
-    {hour: 4, militaryTime: 16},
-    {hour: 5, militaryTime: 17}
+    {title: "Change Event", hour: 9, militaryTime: 9},
+    {title: "Change Event", hour: 10, militaryTime: 10},
+    {title: "Change Event", hour: 11, militaryTime: 11},
+    {title: "Change Event", hour: 12, militaryTime: 12},
+    {title: "Change Event", hour: 1,  militaryTime: 13},
+    {title: "Change Event", hour: 2, militaryTime: 14},
+    {title: "Change Event", hour: 3, militaryTime: 15},
+    {title: "Change Event", hour: 4, militaryTime: 16},
+    {title: "Change Event", hour: 5, militaryTime: 17}
 ]
 var textAreaEl = null
 
@@ -49,20 +49,27 @@ var renderEventColorCode = function() {
 }
 
 var renderEvent = function() {
-    for (let index = 0; index < 9; index++) {
+    // Check if the local storage has events
+    if(localStorage.getItem("events")){
+        // Set event array to the events stored in the local storage
+        _event = JSON.parse(localStorage.getItem("events"))
+    }
+
+    for (let index = 0; index < _event.length; index++) {
         var meridiem =  (_event[index].hour >= 9 && _event[index].hour <= 12) ? "AM" : "PM"
+
         eventTemplate += `
-            <div class="row d-flex align-items-stretch event" data-event-id="` + index + `">
+            <div id="event" class="row d-flex align-items-stretch event" data-event-id="` + index + `">
                 <div class="col-1 d-flex align-items-center justify-content-end">
                     <p id="time">` 
                         + _event[index].hour + meridiem + 
                     `</p>
                 </div>
-                <div class="col-10 px-0 d-flex align-items-center justify-content-center">
-                    <textarea class="border-0 w-100 h-100 p-4 text ` + _event[index].time +` event-title">Change Event</textarea>
+                <div id="titleCont" class="col-10 px-0 d-flex align-items-center justify-content-center">
+                    <textarea class="border-0 w-100 h-100 p-4 text ` + _event[index].time +` event-title">` + _event[index].title +`</textarea>
                 </div>
                 <div class="col-1 d-flex align-items-center justify-content-center saveBtn">
-                    <i class="fas fa-save saveBtn"></i>
+                    <i class="fas fa-save saveButton"></i>
                 </div>
             </div>
             `    
@@ -107,13 +114,27 @@ setInterval(function(){
     renderClassColorCode()
 }, 1000)
 
-
-
 // Create Event
 $(".event-title").on("blur", function(){
+    var title = $(this)
+    .val()
+    .trim()
+
+    // Sync the value whenever there is a change
+    $(this).text(title)
+})
+
+// Save Event
+$(".saveButton").on("click", function(){
     var id = $(this)
-        .closest("div.event")
-        .attr("data-event-id")
-    var textContent = $(this).val().trim()
-    console.log(textContent)
+    .closest("div.event")
+    .attr("data-event-id")
+
+    id = parseInt(id)
+    
+    var title = $(".event-title")[id].textContent
+
+    // Update the events at the current position
+    _event[id].title = title
+    localStorage.setItem("events", JSON.stringify(_event))
 })
