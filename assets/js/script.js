@@ -56,7 +56,7 @@ var renderEvent = function() {
     }
 
     for (let index = 0; index < _event.length; index++) {
-        var meridiem =  (_event[index].hour >= 9 && _event[index].hour <= 12) ? "AM" : "PM"
+        var meridiem =  (_event[index].hour >= 9 && _event[index].hour < 12) ? "AM" : "PM"
 
         eventTemplate += `
             <div id="event" class="row d-flex align-items-stretch event" data-event-id="` + index + `">
